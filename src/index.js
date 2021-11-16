@@ -2,22 +2,19 @@ import $ from 'jquery';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/styles.css';
+import GiphyService from './giphy-service.js';
+
 
 $("#search").submit((event) => {
   event.preventDefault();
   const searchTerm = $("#searchTerm").val();
   $("#searchTerm").val("");
 
-  let request = new XMLHttpRequest();
-  const url = `http://api.giphy.com/v1/stickers/search?q=${searchTerm}&api_key=${process.env.API_KEY}`;
-  request.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      outputGifs(response);
-    }
-  };
-  request.open("GET", url, true);
-  request.send();
+  let promise = GiphyService.getSearch(searchTerm);
+  promise.then(function(response) {
+    const responseJSON = JSON.parse(response);
+    outputGifs(responseJSON);
+  });
 });
 
 function outputGifs(response) {
@@ -35,29 +32,17 @@ function outputGifs(response) {
 }
 
 $("#trendSearch").click(() => {
-
-  let request = new XMLHttpRequest();
-  const url = `http://api.giphy.com/v1/gifs/trending?&api_key=${process.env.API_KEY}`;
-  request.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      outputGifs(response);
-    }
-  };
-  request.open("GET", url, true);
-  request.send();  
+  let promise = GiphyService.getTrend();
+  promise.then(function(response) {
+    const responseJSON = JSON.parse(response);
+    outputGifs(responseJSON);
+  });
 });
 
 $("#randomSearch").click(() => {
-
-  let request = new XMLHttpRequest();
-  const url = `http://api.giphy.com/v1/gifs/random?&api_key=${process.env.API_KEY}`;
-  request.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-      const response = JSON.parse(this.responseText);
-      outputGifs(response);
-    }
-  };
-  request.open("GET", url, true);
-  request.send();
+  let promise = GiphyService.getRandom();
+  promise.then(function(response) {
+    const responseJSON = JSON.parse(response);
+    outputGifs(responseJSON);
+  });
 });
